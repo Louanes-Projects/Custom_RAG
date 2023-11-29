@@ -1,0 +1,8 @@
+gradio
+openai
+dynaconf
+langchain
+unstructured
+spacy
+numpy
+google-cloud-aiplatform

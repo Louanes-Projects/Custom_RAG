@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.24.0 (4a2a0458)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: frontapp
+  name: frontapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: frontapp
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.24.0 (4a2a0458)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: frontapp
+    spec:
+      containers:
+        - args:
+            - python
+            - -m
+            - knowledge_retriever.frontapp.app
+          env:
+            - name: KR_retriever__mode
+              value: '"remote"'
+            - name: KR_retriever__url
+              value: '"http://knowledgeretriever:80"'
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/app/keys/vertexai.json" 
+          volumeMounts:
+            - name: google-secret
+              mountPath: "/app/keys" 
+          image: $containerRegistryRemotePath/frontapp:8ea3905b0ec02face8f36618bd8dd8d6c997041d
+          name: frontapp
+          ports:
+            - containerPort: 7000
+          resources: {}
+      volumes:
+      - name: google-secret
+        secret:
+          secretName: google-vertex-secret
+      restartPolicy: Always
+status: {}

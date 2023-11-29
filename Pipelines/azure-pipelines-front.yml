@@ -1,0 +1,77 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+
+
+trigger:
+  branches:
+    include:
+    - dev
+  paths:
+    include:
+    - knowledge_retriever/frontapp/*
+    - Dockerfile-frontapp
+    - azure-pipelines-front.yml
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: $dockerRegistryServiceKey
+  imageRepository: 'frontapp'
+  containerRegistry: $containerRegistryRemotePath
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile-frontapp'
+  imageName: $(containerRegistry)/$(imageRepository)
+  tag: '$(Build.SourceVersion)'
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+resources:
+- repo: self
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+
+
+- stage: UpdateManifest
+  displayName: 'Update Manifest and Commit'
+  jobs:
+  - job: UpdateManifestJob
+    displayName: 'Update Manifest Job'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+      fetchDepth: 0
+      persistCredentials: true
+
+    - script: |
+        git checkout $(Build.SourceBranchName)
+      displayName: 'Switch to source branch'
+      
+    - script: |
+        sed -i "s|$(imageName):.*|$(imageName):$(Build.SourceVersion)|" kubernetes/frontapp-deployment.yaml
+      displayName: 'Update Image Tag in Manifest'
+
+    - script: |
+        git config --global user.email "build@pipeline.com"
+        git config --global user.name "Azure Pipeline"
+        git add  kubernetes/knowledgeretriever-deployment.yaml
+        git commit -m "Update image tag to $(Build.SourceVersion)"
+        git push origin HEAD:dev
+      displayName: 'Commit and Push Manifest'

@@ -1,0 +1,14 @@
+FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+RUN mkdir -p /app
+WORKDIR /app
+COPY knowledge_retriever/vectorstore/requirements.txt ./requirements.txt
+RUN pip install -r requirements.txt
+RUN python -m nltk.downloader punkt
+RUN python -m nltk.downloader averaged_perceptron_tagger
+RUN python -m spacy download fr_core_news_sm -q
+RUN apt-get update && \
+    apt-get install -y libreoffice
+COPY . .
+EXPOSE 80
+CMD ["uvicorn", "knowledge_retriever.app:app", "--host", "0.0.0.0", "--port", "80"]
+

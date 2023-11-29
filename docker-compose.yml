@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  knowledgeretriever:
+    build:
+      context: .
+      dockerfile: Dockerfile-knowledgeretriever
+    volumes:
+      - ./chroma_persist:/app/chroma_persist
+    ports:
+      - "80:80"
+    environment:
+      - KR_embeddings__mode="remote"
+      - KR_embeddings__url="http://embedding:8082"
+      - KR_embeddings__embedding_model="text-embedding-ada-002"
+      - KR_vectorstore__mode="local"
+
+    command: ["uvicorn", "knowledge_retriever.app:app", "--host", "0.0.0.0", "--port", "80"]
+
+  embedding:
+    build:
+      dockerfile: Dockerfile-embedding
+    ports:
+      - "8082:8082"
+    environment:
+      - KR_embeddings__mode="local"
+      - KR_embeddings__embedding_model="text-embedding-ada-002"
+      
+
+    command: ["uvicorn","knowledge_retriever.embedding.main:app", "--host", "0.0.0.0", "--port", "8082"]
+
+  frontapp:
+    build:
+      dockerfile: Dockerfile-frontapp
+    ports:
+      - "7000:7000"
+    command: [ "python", "-m", "knowledge_retriever.frontapp.app"]
+
+    environment:
+      - KR_retriever__mode="remote"
+      - KR_retriever__url="http://knowledgeretriever:80"
+      - GOOGLE_APPLICATION_CREDENTIALS=keys/vertexai-sa.json

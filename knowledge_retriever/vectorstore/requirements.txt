@@ -1,0 +1,11 @@
+chromadb==0.3.26 # .29
+fastapi==0.98.0
+uvicorn
+langchain
+dynaconf
+pymupdf
+unstructured==0.7.9
+python-multipart
+spacy
+numpy
+tiktoken
