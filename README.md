@@ -53,3 +53,8 @@ In our Pipelines Folder, we have set up a streamlined continuous delivery proces
     - Build and Push: This stage takes care of building each service's image and pushing it to a Container Registry. It ensures that your latest code is always ready to be deployed.
 
     - Update and Sync: In this stage, the Kubernetes manifests are updated with the commitID. This is crucial for ArgoCD, as it allows for synchronization with the latest image pushed to the container registry.
+
+
+# Overview 
+
+![image](https://github.com/Louanes-Projects/Custom_RAG/assets/79848841/cb1f36c0-63b2-4409-b76b-0a31cd39e00f)
