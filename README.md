@@ -57,4 +57,4 @@ In our Pipelines Folder, we have set up a streamlined continuous delivery proces
 
 # Overview 
 
-![image](https://github.com/Louanes-Projects/Custom_RAG/assets/79848841/cb1f36c0-63b2-4409-b76b-0a31cd39e00f)
+![image](https://github.com/Louanes-Projects/Custom_RAG/assets/79848841/2c5f8af8-d899-4661-ab06-5efbf2fab0b7)
