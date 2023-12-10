@@ -28,14 +28,14 @@ services:
 
     command: ["uvicorn","knowledge_retriever.embedding.main:app", "--host", "0.0.0.0", "--port", "8082"]
 
-  frontapp:
-    build:
-      dockerfile: Dockerfile-frontapp
-    ports:
-      - "7000:7000"
-    command: [ "python", "-m", "knowledge_retriever.frontapp.app"]
+  # frontapp:
+  #   build:
+  #     dockerfile: Dockerfile-frontapp
+  #   ports:
+  #     - "7000:7000"
+  #   command: [ "python", "-m", "knowledge_retriever.frontapp.app"]
 
-    environment:
-      - KR_retriever__mode="remote"
-      - KR_retriever__url="http://knowledgeretriever:80"
-      - GOOGLE_APPLICATION_CREDENTIALS=keys/vertexai-sa.json
+  #   environment:
+  #     - KR_retriever__mode="remote"
+  #     - KR_retriever__url="http://knowledgeretriever:80"
+  #     - GOOGLE_APPLICATION_CREDENTIALS=keys/vertexai-sa.json
